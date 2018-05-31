@@ -7,22 +7,24 @@ var wizards = []
 var similarListElement = document.querySelector('.setup-similar-list')
 var similarWizardTemplate = document.querySelector('#similar-wizard-template').content
 
-//Функция генерации случайного числа в диапазоне
-
-function getRandomInRange(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+function getRandomItem(myArray) {
+  return myArray[Math.floor(Math.random() * (myArray.length))]
 }
 
 function generateWizards() {
+  var newWizards = []
+
   for (var i = 0; i < 4; i++) {
-    wizards.push(
+    newWizards.push(
       {
-        name: WIZARD_NAMES[getRandomInRange(0, WIZARD_NAMES.length - 1)] + ' ' + WIZARD_SURNAMES[getRandomInRange(0, WIZARD_SURNAMES.length - 1)],
-        coatColor: COAT_COLORS[getRandomInRange(0, COAT_COLORS.length - 1)],
-        eyesColor: EYES_COLORS[getRandomInRange(0, EYES_COLORS.length - 1)],
+        name: getRandomItem(WIZARD_NAMES) + ' ' + getRandomItem(WIZARD_SURNAMES),
+        coatColor: getRandomItem(COAT_COLORS),
+        eyesColor: getRandomItem(EYES_COLORS),
       }
     )
   }
+
+  return newWizards
 }
 
 function renderWizards() {
@@ -37,7 +39,7 @@ function renderWizards() {
   }
 }
 
-generateWizards()
+wizards = generateWizards()
 renderWizards()
 
 //Показываем окно
