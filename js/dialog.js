@@ -12,14 +12,12 @@ dialogHandle.addEventListener(`mousedown`, function(e){
   function onMouseMove(moveEvt) {
     moveEvt.preventDefault()
 
-    console.log(startCoords)
-
     var shift = {
       x: startCoords.x - moveEvt.clientX,
       y: startCoords.y - moveEvt.clientY
     }
 
-    var startCoords = {
+    startCoords = {
       x: moveEvt.clientX,
       y: moveEvt.clientY
     }

@@ -14,6 +14,12 @@ var wizardEyes = document.querySelector(`.setup-wizard .wizard-eyes`)
 var fireBall = document.querySelector(`.setup-fireball-wrap`)
 var fireballColorInp = document.querySelector(`.fireball-color-inp`)
 var eyesColorInp = document.querySelector(`.eyes-color-inp`)
+var setup = document.querySelector(`.setup`)
+var setupArtifacts = document.querySelectorAll(`.setup-artifacts-shop .setup-artifacts-cell img`)
+var setupArtifactsCell = document.querySelectorAll(`.setup-artifacts .setup-artifacts-cell`)
+var setupArtifactsContainer = document.querySelector(`.setup-artifacts`)
+
+var dragEnterElem
 
 function getRandomItem(myArray) {
   return myArray[Math.floor(Math.random() * (myArray.length))]
@@ -58,14 +64,14 @@ function onPopupEscPress(evt) {
 
 //Функция открытия окна
 function openSetupWindow() {
-  document.querySelector(`.setup`).classList.remove(`hidden`)
-
+  setup.classList.remove(`hidden`)
+  setup.style = ``
   document.addEventListener(`keydown`, onPopupEscPress)
 }
 
 //Функция закрытия окна
 function closeSetupWindow() {
-  document.querySelector(`.setup`).classList.add(`hidden`)
+  setup.classList.add(`hidden`)
   document.removeEventListener(`keydown`, onPopupEscPress)
 }
 
@@ -103,3 +109,44 @@ fireBall.addEventListener(`click`, function(){
   fireballColorInp.value = newColor
   fireBall.style.backgroundColor = newColor
 })
+
+//DRAG AND DROP
+
+setupArtifacts.forEach(function(artifact) {
+  artifact.addEventListener('dragstart', handleDragStart, false)
+  artifact.addEventListener('dragend', handleDragEnd, false)
+})
+
+setupArtifactsCell.forEach(function(artifactCell) {
+  artifactCell.addEventListener('dragenter', handleDragEnter, false)
+  artifactCell.addEventListener('dragleave', handleDragLeave, false)
+})
+
+function handleDragStart() {
+  // Подсвечиваем ячейки красной рамкой
+  setupArtifactsCell.forEach(function(artifactCell) {
+    artifactCell.style.outline = `2px dashed red`
+  })
+}
+
+function handleDragEnd() {
+  // Убираем подсветку ячейки красной рамкой
+  setupArtifactsCell.forEach(function(artifactCell) {
+    artifactCell.style.outline = `none`
+  })
+
+  // Проверяем есть ли элемент в ячейке
+  if (dragEnterElem.querySelectorAll('img').length === 0) {
+    var star = this.cloneNode(true)
+    dragEnterElem.appendChild(star)
+  }
+}
+
+function handleDragEnter() {
+  this.style.background = `rgba(245, 240, 10, .3)`
+  dragEnterElem = this
+}
+
+function handleDragLeave() {
+  this.style.background = `rgba(0, 0, 0, .1)`
+}
