@@ -20,6 +20,7 @@ var setupArtifactsCell = document.querySelectorAll(`.setup-artifacts .setup-arti
 var setupArtifactsContainer = document.querySelector(`.setup-artifacts`)
 
 var dragEnterElem
+var star
 
 function getRandomItem(myArray) {
   return myArray[Math.floor(Math.random() * (myArray.length))]
@@ -118,11 +119,14 @@ setupArtifacts.forEach(function(artifact) {
 })
 
 setupArtifactsCell.forEach(function(artifactCell) {
-  artifactCell.addEventListener('dragenter', handleDragEnter, false)
   artifactCell.addEventListener('dragleave', handleDragLeave, false)
+  artifactCell.addEventListener('dragover', handleDragOver, false)
+  artifactCell.addEventListener('dragenter', handleDragEnter, false)
+  artifactCell.addEventListener('drop', handleDrop, false)
 })
 
 function handleDragStart() {
+  star = this
   // Подсвечиваем ячейки красной рамкой
   setupArtifactsCell.forEach(function(artifactCell) {
     artifactCell.style.outline = `2px dashed red`
@@ -134,19 +138,36 @@ function handleDragEnd() {
   setupArtifactsCell.forEach(function(artifactCell) {
     artifactCell.style.outline = `none`
   })
-
-  // Проверяем есть ли элемент в ячейке
-  if (dragEnterElem.querySelectorAll('img').length === 0) {
-    var star = this.cloneNode(true)
-    dragEnterElem.appendChild(star)
-  }
 }
 
 function handleDragEnter() {
   this.style.background = `rgba(245, 240, 10, .3)`
-  dragEnterElem = this
 }
 
 function handleDragLeave() {
   this.style.background = `rgba(0, 0, 0, .1)`
+}
+
+function handleDragOver(e) {
+  if (e.preventDefault) {
+    e.preventDefault()
+  }
+}
+
+function handleDrop() {
+  dragEnterElem = this
+  dragEnterElem.style.background = `rgba(0, 0, 0, .1)`
+
+  // Проверяем есть ли элемент в ячейке
+  if (dragEnterElem.querySelectorAll(`img`).length === 0) {
+    var newStar = star.cloneNode(true)
+    newStar.addEventListener('dragstart', handleDragStart, false)
+    newStar.addEventListener('dragend', handleDragEnd, false)
+    dragEnterElem.appendChild(newStar)
+
+    // Если перемещение внутри рюкзака удаляем звезду
+    if (star.parentNode.parentNode.className !== `setup-artifacts-shop`) {
+      star.parentNode.removeChild(star)
+    }
+  }
 }
