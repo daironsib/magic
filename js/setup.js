@@ -149,9 +149,7 @@ function handleDragLeave() {
 }
 
 function handleDragOver(e) {
-  if (e.preventDefault) {
-    e.preventDefault()
-  }
+  e.preventDefault()
 }
 
 function handleDrop() {
