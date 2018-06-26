@@ -1,7 +1,7 @@
+(function () {
 var dialogHandle = document.querySelector(`.setup-user-pic`)
 var setup = document.querySelector(`.setup`)
 
-(function () {
   dialogHandle.addEventListener(`mousedown`, function(e){
     e.preventDefault()
 
