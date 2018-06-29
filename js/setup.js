@@ -1,7 +1,4 @@
 (function () {
-  var WIZARD_NAMES = ['Иван', 'Хуан Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон']
-  var WIZARD_SURNAMES = ['да Марья', 'Верон', 'Мирабелл', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг']
-  var COAT_COLORS = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)']
   var EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green']
   var FIREBALL_COLORS = [`#ee4830`, `#30a8ee`, `#5ce6c0`, `#e848d5`, `#e6e848`]
   var wizards = []
@@ -18,41 +15,46 @@
   var setup = document.querySelector(`.setup`)
   var setupArtifacts = document.querySelectorAll(`.setup-artifacts-shop .setup-artifacts-cell img`)
   var setupArtifactsCell = document.querySelectorAll(`.setup-artifacts .setup-artifacts-cell`)
-  var setupArtifactsContainer = document.querySelector(`.setup-artifacts`)
+  var form = document.querySelector('.setup-wizard-form')
 
   var dragEnterElem
   var star
 
-  function getRandomItem(myArray) {
-    return myArray[Math.floor(Math.random() * (myArray.length))]
-  }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault()
+    window.backend.save(new FormData(form), closeSetupWindow, errorHandler)
+  })
 
-  function generateWizards() {
-    var newWizards = []
+  // Функция отрисовки похожих волшебников
+  function recievedHandler(wizards) {
+    // Перемешиваем волшебников
+    wizards = window.util.shuffle(wizards)
 
     for (var i = 0; i < 4; i++) {
-      newWizards.push(
-        {
-          name: getRandomItem(WIZARD_NAMES) + ' ' + getRandomItem(WIZARD_SURNAMES),
-          coatColor: getRandomItem(COAT_COLORS),
-          eyesColor: getRandomItem(EYES_COLORS),
-        }
-      )
-    }
-
-    return newWizards
-  }
-
-  function renderWizards() {
-    for (var i = 0; i < wizards.length; i++) {
       var wizardElement = similarWizardTemplate.cloneNode(true)
 
       wizardElement.querySelector('.setup-similar-label').textContent = wizards[i].name
-      wizardElement.querySelector('.wizard-coat').style.fill = wizards[i].coatColor
-      wizardElement.querySelector('.wizard-eyes').style.fill = wizards[i].eyesColor
+      wizardElement.querySelector('.wizard-coat').style.fill = wizards[i].colorCoat
+      wizardElement.querySelector('.wizard-eyes').style.fill = wizards[i].colorEyes
 
       similarListElement.appendChild(wizardElement)
     }
+
+    document.querySelector('.setup-similar').classList.remove('hidden')
+  }
+
+  // Функция вывода ошибки получения данных о волшебниках
+  function errorHandler(errorMessage) {
+    var node = document.createElement('div')
+    node.style = 'z-index: 100; width: 100%; text-align: center; background-color: red; padding: 15px 0;'
+    node.style.position = 'absolute'
+    node.style.top = 0
+    node.style.left = 0
+    node.style.right = 0
+    node.style.fontSize = '25px'
+
+    node.textContent = errorMessage
+    document.body.insertAdjacentElement('afterbegin', node)
   }
 
   //ФУНКЦИИ ДЛЯ РАБОТЫ С ОКНОМ SETUP
@@ -77,10 +79,8 @@
     document.removeEventListener(`keydown`, onPopupEscPress)
   }
 
-
-  wizards = generateWizards()
-  renderWizards()
-
+  // Подгружаем данные о волшебниках с сервера
+  window.backend.load(recievedHandler, errorHandler)
 
   //РАБОТА С ОКНОМ SETUP
 
