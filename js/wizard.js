@@ -15,8 +15,29 @@ var coatColor
 var eyesColor
 var fireballColor
 
-(function () {
-  var getRank = function (wizard) {
+window.wizard = (function () {
+  return {
+    onEyesChange: function (color) {
+      eyesColor = color
+      eyesColorInp.value = color
+      wizardEyes.style.fill = color
+      window.debounce(updateWizards)
+    },
+    onCoatChange: function (color) {
+      coatColor = color
+      wizardCoat.style.fill = color
+      window.debounce(updateWizards)
+    },
+    onFireBallChange: function (color) {
+      fireballColor = color
+      fireballColorInp.value = color
+      fireBall.style.backgroundColor = color
+      window.debounce(updateWizards)
+    }
+  }
+})();
+
+var getRank = function (wizard) {
     var rank = 0
 
     if (wizard.colorCoat === coatColor) {
@@ -29,7 +50,7 @@ var fireballColor
     return rank
   }
 
-  var namesComparator = function (left, right) {
+var namesComparator = function (left, right) {
     if (left > right) {
       return 1
     } else if (left < right) {
@@ -39,7 +60,7 @@ var fireballColor
     }
   }
 
-  var updateWizards = function () {
+var updateWizards = function () {
     renderWizards(wizardsData.sort(function (left, right) {
       var rankDiff = getRank(right) - getRank(left)
       if (rankDiff === 0) {
@@ -49,34 +70,14 @@ var fireballColor
     }))
   }
 
-  window.wizard.onEyesChange = function (color) {
-    eyesColor = color
-    eyesColorInp.value = color
-    wizardEyes.style.fill = color
-    window.debounce(updateWizards)
-  }
-
-  window.wizard.onCoatChange = function (color) {
-    coatColor = color
-    wizardCoat.style.fill = color
-    window.debounce(updateWizards)
-  }
-
-  window.wizard.onFireBallChange = function (color) {
-    fireballColor = color
-    fireballColorInp.value = color
-    fireBall.style.backgroundColor = color
-    window.debounce(updateWizards)
-  }
-
-  // Функция отрисовки похожих волшебников
-  var recievedHandler = function (wizards) {
+// Функция отрисовки похожих волшебников
+var recievedHandler = function (wizards) {
     wizardsData = wizards
     renderWizards(wizards)
-  }
+}
 
-  // Функция вывода ошибки получения данных о волшебниках
-  var errorHandler = function (errorMessage) {
+// Функция вывода ошибки получения данных о волшебниках
+var errorHandler = function (errorMessage) {
     var node = document.createElement('div')
     node.style = 'z-index: 100; width: 100%; text-align: center; background-color: red; padding: 15px 0;'
     node.style.position = 'absolute'
@@ -87,10 +88,10 @@ var fireballColor
 
     node.textContent = errorMessage
     document.body.insertAdjacentElement('afterbegin', node)
-  }
+}
 
-  // Функция отрисовки одного волшебника
-  var createNodeWizard = function (wizard) {
+// Функция отрисовки одного волшебника
+var createNodeWizard = function (wizard) {
     var wizardElement = similarWizardTemplate.cloneNode(true)
 
     wizardElement.querySelector('.setup-similar-label').textContent = wizard.name
@@ -98,9 +99,9 @@ var fireballColor
     wizardElement.querySelector('.wizard-eyes').style.fill = wizard.colorEyes
 
     return wizardElement
-  }
+}
 
-  var renderWizards = function (wizards) {
+var renderWizards = function (wizards) {
     var takeNumber = wizards.length > 4 ? 4 : wizards.length
     similarList.innerHTML = ''
     for (var i = 0; i < takeNumber; i++) {
@@ -108,8 +109,7 @@ var fireballColor
     }
 
     similar.classList.remove('hidden')
-  }
+}
 
-  // Подгружаем данные о волшебниках с сервера
-  window.backend.load(recievedHandler, errorHandler)
-})()
+// Подгружаем данные о волшебниках с сервера
+window.backend.load(recievedHandler, errorHandler)
