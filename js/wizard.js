@@ -6,6 +6,9 @@ var fireballColorInp = document.querySelector(`.fireball-color-inp`)
 var eyesColorInp = document.querySelector(`.eyes-color-inp`)
 var wizardEyes = document.querySelector(`.setup-wizard .wizard-eyes`)
 var wizardCoat = document.querySelector('.wizard-coat')
+var similarWizardTemplate = document.querySelector('#similar-wizard-template').content
+var similar = document.querySelector('.setup-similar')
+var similarList = document.querySelector('.setup-similar-list')
 
 var wizardsData = []
 var coatColor
@@ -37,7 +40,7 @@ var fireballColor
   }
 
   var updateWizards = function () {
-    window.render(wizardsData.sort(function (left, right) {
+    renderWizards(wizardsData.sort(function (left, right) {
       var rankDiff = getRank(right) - getRank(left)
       if (rankDiff === 0) {
         rankDiff = namesComparator(left.name, right.name)
@@ -69,7 +72,7 @@ var fireballColor
   // Функция отрисовки похожих волшебников
   var recievedHandler = function (wizards) {
     wizardsData = wizards
-    window.render(wizards)
+    renderWizards(wizards)
   }
 
   // Функция вывода ошибки получения данных о волшебниках
@@ -84,6 +87,27 @@ var fireballColor
 
     node.textContent = errorMessage
     document.body.insertAdjacentElement('afterbegin', node)
+  }
+
+  // Функция отрисовки одного волшебника
+  var createNodeWizard = function (wizard) {
+    var wizardElement = similarWizardTemplate.cloneNode(true)
+
+    wizardElement.querySelector('.setup-similar-label').textContent = wizard.name
+    wizardElement.querySelector('.wizard-coat').style.fill = wizard.colorCoat
+    wizardElement.querySelector('.wizard-eyes').style.fill = wizard.colorEyes
+
+    return wizardElement
+  }
+
+  var renderWizards = function (wizards) {
+    var takeNumber = wizards.length > 4 ? 4 : wizards.length
+    similarList.innerHTML = ''
+    for (var i = 0; i < takeNumber; i++) {
+      similarList.appendChild(createNodeWizard(wizards[i]))
+    }
+
+    similar.classList.remove('hidden')
   }
 
   // Подгружаем данные о волшебниках с сервера
