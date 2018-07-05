@@ -16,6 +16,9 @@ window.util = (function () {
         array[randomIndex] = temporaryValue
       }
       return array
+    },
+    getRandomItem: function (array) {
+      return array[Math.floor(Math.random() * (array.length))]
     }
   }
 })()

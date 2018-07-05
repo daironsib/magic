@@ -1,17 +1,13 @@
 (function () {
   var EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green']
   var FIREBALL_COLORS = [`#ee4830`, `#30a8ee`, `#5ce6c0`, `#e848d5`, `#e6e848`]
-  var wizards = []
-
-  var similarListElement = document.querySelector('.setup-similar-list')
-  var similarWizardTemplate = document.querySelector('#similar-wizard-template').content
+  var COAT_COLORS = ['rgb(146, 100, 161)', 'rgb(215, 210, 55)', 'rgb(241, 43, 107)', 'rgb(101, 137, 164)', 'rgb(0, 0, 0)', 'rgb(215, 210, 55)', 'rgb(56, 159, 117)', 'rgb(241, 43, 107)']
 
   var setupOpen = document.querySelector(`.setup-open`)
   var setupClose = document.querySelector(`.setup-close`)
   var wizardEyes = document.querySelector(`.setup-wizard .wizard-eyes`)
   var fireBall = document.querySelector(`.setup-fireball-wrap`)
-  var fireballColorInp = document.querySelector(`.fireball-color-inp`)
-  var eyesColorInp = document.querySelector(`.eyes-color-inp`)
+  var wizardCoat = document.querySelector(`.wizard-coat`)
   var setup = document.querySelector(`.setup`)
   var setupArtifacts = document.querySelectorAll(`.setup-artifacts-shop .setup-artifacts-cell img`)
   var setupArtifactsCell = document.querySelectorAll(`.setup-artifacts .setup-artifacts-cell`)
@@ -22,40 +18,8 @@
 
   form.addEventListener('submit', function (e) {
     e.preventDefault()
-    window.backend.save(new FormData(form), closeSetupWindow, errorHandler)
+    window.backend.save(new FormData(form), closeSetupWindow, window.wizard.errorHandler)
   })
-
-  // Функция отрисовки похожих волшебников
-  function recievedHandler(wizards) {
-    // Перемешиваем волшебников
-    wizards = window.util.shuffle(wizards)
-
-    for (var i = 0; i < 4; i++) {
-      var wizardElement = similarWizardTemplate.cloneNode(true)
-
-      wizardElement.querySelector('.setup-similar-label').textContent = wizards[i].name
-      wizardElement.querySelector('.wizard-coat').style.fill = wizards[i].colorCoat
-      wizardElement.querySelector('.wizard-eyes').style.fill = wizards[i].colorEyes
-
-      similarListElement.appendChild(wizardElement)
-    }
-
-    document.querySelector('.setup-similar').classList.remove('hidden')
-  }
-
-  // Функция вывода ошибки получения данных о волшебниках
-  function errorHandler(errorMessage) {
-    var node = document.createElement('div')
-    node.style = 'z-index: 100; width: 100%; text-align: center; background-color: red; padding: 15px 0;'
-    node.style.position = 'absolute'
-    node.style.top = 0
-    node.style.left = 0
-    node.style.right = 0
-    node.style.fontSize = '25px'
-
-    node.textContent = errorMessage
-    document.body.insertAdjacentElement('afterbegin', node)
-  }
 
   //ФУНКЦИИ ДЛЯ РАБОТЫ С ОКНОМ SETUP
 
@@ -79,9 +43,6 @@
     document.removeEventListener(`keydown`, onPopupEscPress)
   }
 
-  // Подгружаем данные о волшебниках с сервера
-  window.backend.load(recievedHandler, errorHandler)
-
   //РАБОТА С ОКНОМ SETUP
 
   //Открыть, закрыть попап
@@ -89,27 +50,31 @@
   setupClose.addEventListener(`click`, closeSetupWindow)
 
   //Обрабатываем нажание Enter по аватарке
-  setupOpen.addEventListener(`keydown`, function(evt){
+  setupOpen.addEventListener(`keydown`, function(evt) {
     if(evt.keyCode === 13) { openSetupWindow() }
   })
 
   //Обрабатываем нажание Enter по крестику
-  setupClose.addEventListener(`keydown`, function(evt){
+  setupClose.addEventListener(`keydown`, function(evt) {
     if(evt.keyCode === 13) { closeSetupWindow() }
   })
 
   //Обрабатываем клик по глазам
-  wizardEyes.addEventListener(`click`, function(){
-    var newColor = getRandomItem(EYES_COLORS)
-    eyesColorInp.value = newColor
-    wizardEyes.style.fill = newColor
+  wizardEyes.addEventListener(`click`, function() {
+    var newColor = window.util.getRandomItem(EYES_COLORS)
+    window.wizard.onEyesChange(newColor)
   })
 
   //Обрабатываем клик по файерболу
-  fireBall.addEventListener(`click`, function(){
-    var newColor = getRandomItem(FIREBALL_COLORS)
-    fireballColorInp.value = newColor
-    fireBall.style.backgroundColor = newColor
+  fireBall.addEventListener(`click`, function() {
+    var newColor = window.util.getRandomItem(FIREBALL_COLORS)
+    window.wizard.onFireBallChange(newColor)
+  })
+
+  //Обрабатываем клик по плащу
+  wizardCoat.addEventListener(`click`, function() {
+    var newColor = window.util.getRandomItem(COAT_COLORS)
+    window.wizard.onCoatChange(newColor)
   })
 
   //DRAG AND DROP
