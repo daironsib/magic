@@ -1,22 +1,22 @@
 // Файл wizard.js
-'use strict'
+'use strict';
 
-var fireBall = document.querySelector(`.setup-fireball-wrap`)
-var fireballColorInp = document.querySelector(`.fireball-color-inp`)
-var eyesColorInp = document.querySelector(`.eyes-color-inp`)
-var wizardEyes = document.querySelector(`.setup-wizard .wizard-eyes`)
-var wizardCoat = document.querySelector('.wizard-coat')
-var similarWizardTemplate = document.querySelector('#similar-wizard-template').content
-var similar = document.querySelector('.setup-similar')
-var similarList = document.querySelector('.setup-similar-list')
+(function () {
+  var fireBall = document.querySelector(`.setup-fireball-wrap`)
+  var fireballColorInp = document.querySelector(`.fireball-color-inp`)
+  var eyesColorInp = document.querySelector(`.eyes-color-inp`)
+  var wizardEyes = document.querySelector(`.setup-wizard .wizard-eyes`)
+  var wizardCoat = document.querySelector('.wizard-coat')
+  var similarWizardTemplate = document.querySelector('#similar-wizard-template').content
+  var similar = document.querySelector('.setup-similar')
+  var similarList = document.querySelector('.setup-similar-list')
 
-var wizardsData = []
-var coatColor
-var eyesColor
-var fireballColor
+  var wizardsData = []
+  var coatColor
+  var eyesColor
+  var fireballColor
 
-window.wizard = (function () {
-  return {
+  var wizard = {
     onEyesChange: function (color) {
       eyesColor = color
       eyesColorInp.value = color
@@ -35,9 +35,8 @@ window.wizard = (function () {
       window.debounce(updateWizards)
     }
   }
-})();
 
-var getRank = function (wizard) {
+  var getRank = function (wizard) {
     var rank = 0
 
     if (wizard.colorCoat === coatColor) {
@@ -50,7 +49,7 @@ var getRank = function (wizard) {
     return rank
   }
 
-var namesComparator = function (left, right) {
+  var namesComparator = function (left, right) {
     if (left > right) {
       return 1
     } else if (left < right) {
@@ -60,7 +59,7 @@ var namesComparator = function (left, right) {
     }
   }
 
-var updateWizards = function () {
+  var updateWizards = function () {
     renderWizards(wizardsData.sort(function (left, right) {
       var rankDiff = getRank(right) - getRank(left)
       if (rankDiff === 0) {
@@ -70,28 +69,14 @@ var updateWizards = function () {
     }))
   }
 
-// Функция отрисовки похожих волшебников
-var recievedHandler = function (wizards) {
+  // Функция отрисовки похожих волшебников
+  var recievedHandler = function (wizards) {
     wizardsData = wizards
     renderWizards(wizards)
-}
+  }
 
-// Функция вывода ошибки получения данных о волшебниках
-var errorHandler = function (errorMessage) {
-    var node = document.createElement('div')
-    node.style = 'z-index: 100; width: 100%; text-align: center; background-color: red; padding: 15px 0;'
-    node.style.position = 'absolute'
-    node.style.top = 0
-    node.style.left = 0
-    node.style.right = 0
-    node.style.fontSize = '25px'
-
-    node.textContent = errorMessage
-    document.body.insertAdjacentElement('afterbegin', node)
-}
-
-// Функция отрисовки одного волшебника
-var createNodeWizard = function (wizard) {
+  // Функция отрисовки одного волшебника
+  var createNodeWizard = function (wizard) {
     var wizardElement = similarWizardTemplate.cloneNode(true)
 
     wizardElement.querySelector('.setup-similar-label').textContent = wizard.name
@@ -99,17 +84,21 @@ var createNodeWizard = function (wizard) {
     wizardElement.querySelector('.wizard-eyes').style.fill = wizard.colorEyes
 
     return wizardElement
-}
+  }
 
-var renderWizards = function (wizards) {
-    var takeNumber = wizards.length > 4 ? 4 : wizards.length
+  var renderWizards = function (wizards) {
     similarList.innerHTML = ''
-    for (var i = 0; i < takeNumber; i++) {
-      similarList.appendChild(createNodeWizard(wizards[i]))
-    }
+    wizards.forEach(function(item, i){
+      if (i < 4) {
+        similarList.appendChild(createNodeWizard(item))
+      }
+    })
 
     similar.classList.remove('hidden')
-}
+  }
 
-// Подгружаем данные о волшебниках с сервера
-window.backend.load(recievedHandler, errorHandler)
+  // Подгружаем данные о волшебниках с сервера
+  window.backend.load(recievedHandler, window.util.errorHandler)
+
+  return window.wizard = wizard
+})()
