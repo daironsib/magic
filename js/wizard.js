@@ -1,7 +1,7 @@
 // Файл wizard.js
 'use strict';
 
-(function () {
+window.wizard = (function () {
   var fireBall = document.querySelector(`.setup-fireball-wrap`)
   var fireballColorInp = document.querySelector(`.fireball-color-inp`)
   var eyesColorInp = document.querySelector(`.eyes-color-inp`)
@@ -11,30 +11,9 @@
   var similar = document.querySelector('.setup-similar')
   var similarList = document.querySelector('.setup-similar-list')
 
-  var wizardsData = []
   var coatColor
   var eyesColor
   var fireballColor
-
-  var wizard = {
-    onEyesChange: function (color) {
-      eyesColor = color
-      eyesColorInp.value = color
-      wizardEyes.style.fill = color
-      window.debounce(updateWizards)
-    },
-    onCoatChange: function (color) {
-      coatColor = color
-      wizardCoat.style.fill = color
-      window.debounce(updateWizards)
-    },
-    onFireBallChange: function (color) {
-      fireballColor = color
-      fireballColorInp.value = color
-      fireBall.style.backgroundColor = color
-      window.debounce(updateWizards)
-    }
-  }
 
   var getRank = function (wizard) {
     var rank = 0
@@ -60,19 +39,13 @@
   }
 
   var updateWizards = function () {
-    renderWizards(wizardsData.sort(function (left, right) {
+    window.wizard.renderWizards(window.wizardsData.sort(function (left, right) {
       var rankDiff = getRank(right) - getRank(left)
       if (rankDiff === 0) {
         rankDiff = namesComparator(left.name, right.name)
       }
       return rankDiff
     }))
-  }
-
-  // Функция отрисовки похожих волшебников
-  var recievedHandler = function (wizards) {
-    wizardsData = wizards
-    renderWizards(wizards)
   }
 
   // Функция отрисовки одного волшебника
@@ -86,19 +59,33 @@
     return wizardElement
   }
 
-  var renderWizards = function (wizards) {
-    similarList.innerHTML = ''
-    wizards.forEach(function(item, i){
-      if (i < 4) {
-        similarList.appendChild(createNodeWizard(item))
-      }
-    })
+  return {
+    renderWizards: function (wizards) {
+      similarList.innerHTML = ''
+      wizards.forEach(function(item, i){
+        if (i < 4) {
+          similarList.appendChild(createNodeWizard(item))
+        }
+      })
 
-    similar.classList.remove('hidden')
+      similar.classList.remove('hidden')
+    },
+    onEyesChange: function (color) {
+      eyesColor = color
+      eyesColorInp.value = color
+      wizardEyes.style.fill = color
+      window.debounce(updateWizards)
+    },
+    onCoatChange: function (color) {
+      coatColor = color
+      wizardCoat.style.fill = color
+      window.debounce(updateWizards)
+    },
+    onFireBallChange: function (color) {
+      fireballColor = color
+      fireballColorInp.value = color
+      fireBall.style.backgroundColor = color
+      window.debounce(updateWizards)
+    }
   }
-
-  // Подгружаем данные о волшебниках с сервера
-  window.backend.load(recievedHandler, window.util.errorHandler)
-
-  return window.wizard = wizard
 })()

@@ -18,7 +18,7 @@
 
   form.addEventListener('submit', function (e) {
     e.preventDefault()
-    window.backend.save(new FormData(form), closeSetupWindow, window.wizard.errorHandler)
+    window.backend.save(new FormData(form), closeSetupWindow, window.util.errorHandler)
   })
 
   //ФУНКЦИИ ДЛЯ РАБОТЫ С ОКНОМ SETUP

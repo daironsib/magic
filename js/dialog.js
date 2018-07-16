@@ -1,8 +1,11 @@
-(function () {
+// Файл dialog.js
+'use strict';
+
+window.dialog = (function () {
 var dialogHandle = document.querySelector(`.setup-user-pic`)
 var setup = document.querySelector(`.setup`)
 
-  dialogHandle.addEventListener(`mousedown`, function(e){
+  dialogHandle.addEventListener(`mousedown`, function(e) {
     e.preventDefault()
 
     var startCoords = {
